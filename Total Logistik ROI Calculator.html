@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Logistik Software ROI Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .inputs-section {
+            background: #f8f9fa;
+            padding: 40px;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .results-section {
+            background: white;
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            font-weight: bold;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        #freight-exchange-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .exchange-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .exchange-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+
+
+        .results-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .metric-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .break-even-highlight {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .break-even-highlight h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .break-even-highlight .value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .time-savings {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #8b4513;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .time-savings h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .time-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .advanced-options {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .advanced-options h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .inputs-section {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            color: #856404;
+        }
+
+        .warning-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Total Logistik Software</h1>
+            <p>ROI Calculator - European Freight Dispatcher Automation</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Inputs Section -->
+            <div class="inputs-section">
+                <h2 style="margin-bottom: 30px; color: #495057;">Configuration</h2>
+                
+                <div class="form-group">
+                    <label for="hourlyCost">Hourly Employer Cost (€):</label>
+                    <input type="number" id="hourlyCost" value="30.00" step="0.01" min="1" oninput="updateCalculations()">
+                </div>
+
+                <div class="form-group">
+                    <label for="dispatchers">Number of Dispatchers:</label>
+                    <input type="number" id="dispatchers" value="1" min="1" max="50" oninput="updateCalculations()">
+                </div>
+
+                <div class="form-group">
+                    <label for="shipmentsPerDay">Shipments per Day (per Dispatcher):</label>
+                    <input type="number" id="shipmentsPerDay" value="10" min="1" max="100" oninput="updateCalculations()">
+                </div>
+                
+                 <div class="form-group">
+                    <label for="manualTime">Manual Time per Shipment (minutes):</label>
+                    <input type="number" id="manualTime" value="40" min="1" max="240" oninput="updateCalculations()">
+                </div>
+
+                <div class="form-group">
+                    <label for="workingDays">Working Days per Month:</label>
+                    <input type="number" id="workingDays" value="21.65" step="0.01" min="15" max="31" oninput="updateCalculations()">
+                </div>
+
+                <div class="advanced-options">
+                    <h3>Software Configuration</h3>
+                    <div class="form-group">
+                        <label for="baseFee">Platform Base Fee (€/month):</label>
+                        <input type="text" id="baseFee" value="€50.00" readonly>
+                    </div>
+                     <div class="form-group">
+                        <label for="userFee">Cost per Dispatcher (€/month):</label>
+                        <input type="text" id="userFee" value="€25.00" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Freight Exchanges:</label>
+                        <div id="freight-exchange-list">
+                            <div class="exchange-item"><input type="checkbox" id="timocom" class="freight-exchange-checkbox" onchange="updateCalculations()" checked><label for="timocom">Timocom</label></div>
+                            <div class="exchange-item"><input type="checkbox" id="transporeon" class="freight-exchange-checkbox" onchange="updateCalculations()" checked><label for="transporeon">Transporeon</label></div>
+                            <div class="exchange-item"><input type="checkbox" id="teleroute" class="freight-exchange-checkbox" onchange="updateCalculations()" checked><label for="teleroute">Teleroute</label></div>
+                            <div class="exchange-item"><input type="checkbox" id="uturn" class="freight-exchange-checkbox" onchange="updateCalculations()"><label for="uturn">Uturn</label></div>
+                            <div class="exchange-item"><input type="checkbox" id="cargoffer" class="freight-exchange-checkbox" onchange="updateCalculations()"><label for="cargoffer">Cargoffer</label></div>
+                            <div class="exchange-item"><input type="checkbox" id="wtransnet" class="freight-exchange-checkbox" onchange="updateCalculations()"><label for="wtransnet">Wtransnet</label></div>
+                            <div class="exchange-item"><input type="checkbox" id="transeu" class="freight-exchange-checkbox" onchange="updateCalculations()"><label for="transeu">Trans.eu</label></div>
+                            <div class="exchange-item"><input type="checkbox" id="cargo123" class="freight-exchange-checkbox" onchange="updateCalculations()"><label for="cargo123">123 Cargo</label></div>
+                            <div class="exchange-item"><input type="checkbox" id="tutransporte" class="freight-exchange-checkbox" onchange="updateCalculations()"><label for="tutransporte">Tutransporteonline</label></div>
+                            <div class="exchange-item"><input type="checkbox" id="fiyuex" class="freight-exchange-checkbox" onchange="updateCalculations()"><label for="fiyuex">Fiyuex</label></div>
+                            <div class="exchange-item"><input type="checkbox" id="ekurrier" class="freight-exchange-checkbox" onchange="updateCalculations()"><label for="ekurrier">E-Kurrier</label></div>
+                            <div class="exchange-item"><input type="checkbox" id="couriernet" class="freight-exchange-checkbox" onchange="updateCalculations()"><label for="couriernet">Couriernet</label></div>
+                        </div>
+                        <small style="color: #666; font-size: 0.9rem; margin-top: 10px; display: block;">€25/month per selected exchange</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section">
+                <h2 style="margin-bottom: 30px; color: #495057;">ROI Analysis Results</h2>
+                
+                <div id="results-container">
+                    <div class="warning-box">
+                        <strong>Please configure your parameters on the left to see detailed ROI analysis.</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatNumber(num, decimals = 2) {
+            return num.toLocaleString('en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+        }
+
+        function updateCalculations() {
+            // --- INPUTS ---
+            const hourlyEmployerCost = parseFloat(document.getElementById('hourlyCost').value) || 0;
+            const dispatchers = parseInt(document.getElementById('dispatchers').value) || 0;
+            const shipmentsPerDay = parseInt(document.getElementById('shipmentsPerDay').value) || 0;
+            const workingDays = parseFloat(document.getElementById('workingDays').value) || 0;
+            const manualTimePerShipment = parseInt(document.getElementById('manualTime').value) || 0;
+            const checkedExchanges = document.querySelectorAll('.freight-exchange-checkbox:checked').length;
+            
+            const resultsContainer = document.getElementById('results-container');
+
+            if (hourlyEmployerCost <= 0) {
+                 resultsContainer.innerHTML = `
+                    <div class="warning-box">
+                        <strong>Please enter a valid hourly employer cost to calculate ROI.</strong>
+                    </div>
+                `;
+                return;
+            }
+
+            if (checkedExchanges === 0) {
+                 resultsContainer.innerHTML = `
+                    <div class="warning-box">
+                        <strong>Please select at least one Freight Exchange to calculate ROI.</strong>
+                    </div>
+                `;
+                return;
+            }
+
+            // --- ASSUMPTIONS ---
+            const automationEfficiency = 0.85; 
+            const timeSavedPerShipmentMinutes = manualTimePerShipment * automationEfficiency;
+            const timeSavedPerShipmentHours = timeSavedPerShipmentMinutes / 60;
+
+            // --- ROI LOGIC ---
+            const baseFee = 50;
+            const userFee = 25;
+            const userCost = dispatchers * userFee;
+            const freightExchangeCost = checkedExchanges * 25;
+            const totalMonthlyCost = baseFee + userCost + freightExchangeCost;
+
+            const costSavingsPerShipment = timeSavedPerShipmentHours * hourlyEmployerCost;
+            const totalShipmentsPerMonth = shipmentsPerDay * workingDays * dispatchers;
+            const totalMonthlySavings = costSavingsPerShipment * totalShipmentsPerMonth;
+            const netMonthlySavings = totalMonthlySavings - totalMonthlyCost;
+            const breakEvenShipments = totalMonthlyCost > 0 && costSavingsPerShipment > 0 ? Math.ceil(totalMonthlyCost / costSavingsPerShipment) : 0;
+            const roiPercentage = totalMonthlyCost > 0 ? (netMonthlySavings / totalMonthlyCost) * 100 : Infinity;
+            
+            const requiredFTEs = dispatchers * (1 - automationEfficiency);
+
+            const dailyTimeSaved = timeSavedPerShipmentHours * shipmentsPerDay * dispatchers;
+            const weeklyTimeSaved = dailyTimeSaved * 5;
+            const monthlyTimeSaved = dailyTimeSaved / dispatchers * workingDays * dispatchers;
+
+            let paybackText = 'Immediate (Profitable from Month 1)';
+            if (netMonthlySavings <= 0) {
+                 paybackText = 'Never breaks even';
+                 if (totalMonthlyCost === 0 && netMonthlySavings > 0) {
+                    paybackText = 'Immediate (No Cost)';
+                 }
+            } else {
+                 const paybackMonths = totalMonthlyCost / netMonthlySavings;
+                 paybackText = paybackMonths.toFixed(1) + ' months';
+            }
+            
+            // --- OUTPUT ---
+            resultsContainer.innerHTML = `
+                <div class="results-card">
+                    <h3 style="margin-bottom: 20px; font-size: 1.4rem;">Custom ROI Analysis</h3>
+                    
+                    <div class="metric">
+                        <span class="metric-label">Hourly Employer Cost</span>
+                        <span class="metric-value">€${formatNumber(hourlyEmployerCost)}</span>
+                    </div>
+                    
+                    <div class="metric">
+                        <span class="metric-label">Cost Savings per Shipment</span>
+                        <span class="metric-value">€${formatNumber(costSavingsPerShipment)}</span>
+                    </div>
+                    
+                    <div class="metric">
+                        <span class="metric-label">Total Monthly Software Cost</span>
+                        <span class="metric-value">€${formatNumber(totalMonthlyCost)}</span>
+                    </div>
+                    
+                    <div class="metric">
+                        <span class="metric-label">Total Monthly Labor Savings</span>
+                        <span class="metric-value">€${formatNumber(totalMonthlySavings)}</span>
+                    </div>
+                    
+                    <div class="metric">
+                        <span class="metric-label">Net Monthly Savings</span>
+                        <span class="metric-value" style="color: ${netMonthlySavings >= 0 ? '#4CAF50' : '#F44336'};">€${formatNumber(netMonthlySavings)}</span>
+                    </div>
+                    
+                    <div class="metric">
+                        <span class="metric-label">Monthly ROI</span>
+                        <span class="metric-value">${isFinite(roiPercentage) ? formatNumber(roiPercentage, 1) + '%' : '∞'}</span>
+                    </div>
+                </div>
+
+                <div class="break-even-highlight">
+                    <h3>Break-Even Analysis</h3>
+                    <div class="value">${formatNumber(breakEvenShipments, 0)}</div>
+                    <p>total shipments per month to break even</p>
+                    <p style="margin-top: 10px; opacity: 0.9;">
+                        Current volume: ${formatNumber(totalShipmentsPerMonth, 0)} shipments/month
+                        ${totalShipmentsPerMonth >= breakEvenShipments ? '✅ Profitable' : '❌ Below break-even'}
+                    </p>
+                </div>
+
+                <div class="time-savings">
+                    <h3>Total Time Savings Analysis</h3>
+                    <div class="time-row">
+                        <span>Time Saved per Shipment:</span>
+                        <strong>${formatNumber(timeSavedPerShipmentMinutes, 1)} minutes</strong>
+                    </div>
+                    <div class="time-row">
+                        <span>Daily Time Saved:</span>
+                        <strong>${formatNumber(dailyTimeSaved, 1)} hours</strong>
+                    </div>
+                    <div class="time-row">
+                        <span>Weekly Time Saved:</span>
+                        <strong>${formatNumber(weeklyTimeSaved, 1)} hours</strong>
+                    </div>
+                    <div class="time-row">
+                        <span>Monthly Time Saved:</span>
+                        <strong>${formatNumber(monthlyTimeSaved, 1)} hours</strong>
+                    </div>
+                </div>
+
+                <div style="background: #e8f5e8; color: #2d5a2d; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                    <h3 style="margin-bottom: 15px;">Financial Summary</h3>
+                    <p><strong>Annual Net Savings:</strong> €${formatNumber(netMonthlySavings * 12)}</p>
+                    <p><strong>Payback Period:</strong> ${paybackText}</p>
+                    <p><strong>3-Year Net Savings:</strong> €${formatNumber(netMonthlySavings * 36)}</p>
+                    <p><strong>Workforce Equivalence:</strong> ${dispatchers} Dispatchers → <strong>${formatNumber(requiredFTEs, 1)}</strong> FTEs</p>
+                </div>
+            `;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Run initial calculation on page load with default values
+            updateCalculations();
+        });
+    </script>
+</body>
+</html>
